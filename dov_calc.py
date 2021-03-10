@@ -1,49 +1,23 @@
+
 #import tkinter as tk
 #from tkinter import filedialog
 import math
 import numpy as np
 # import time as t
 # import imageio
+from geo_objects import Ellipsoid, GeoPoint, ECEFPoint
 
 
-class Ellipsoid:
-    def __init__(self, name: str, a: float, f: float):
-        self.name = name
-        self.a = a  # semi major axis
-        self.f = f  # flattening
-        self.b = self.a * (1 - self.f)  # semi minor axis
-        self.e = math.sqrt(2*self.f - self.f**2)  # eccentricity
-        self.et = math.sqrt(self.e**2 / (1 - self.e**2))  # second eccentricity
-        
-    def calc_help_param(self, lat_rad):
-        self.eta = self.et * math.cos(lat_rad)
-        self.t = math.tan(lat_rad)
-        self.v = math.sqrt(1 + self.eta**2)
-        self.w = math.sqrt(1 - self.e**2 * math.sin(lat_rad)**2)
-        self.rn = self.a / self.w
-        self.rm = self.a * (1 - self.e**2) / self.w**3
-        self.rg = math.sqrt(self.rn * self.rm)
+def geo2ecef(pnt: GeoPoint, ell: Ellipsoid) -> tuple:
+    ell.calc_help_param(pnt.lat)
+    x = (ell.rn + pnt.h) * math.cos(pnt.lat) * math.cos(pnt.lon)
+    y = (ell.rn + pnt.h) * math.cos(pnt.lat) * math.sin(pnt.lon)
+    z = (ell.rn * (1 - ell.e**2) + pnt.h) * math.sin(pnt.lat)
+    return ECEFPoint(x, y, z)
 
 
-class CommonEllipsoids:
-    WGS84 = Ellipsoid(name='WGS84', a=6378137.0, f=1/298.257223563)
-    GRS80 = Ellipsoid(name='GRS80', a=6378137.0, f=1/298.257222101)
-    WGS72 = Ellipsoid(name='WGS72', a=6378135.0, f=1/298.26)
-    INT1924 = Ellipsoid(name='International1924', a=6378388.0, f=1/297.0)
-    CLARKE1880 = Ellipsoid(name='Clarke1880', a=6378300.79, f=1/293.466307656)
-
-
-def geo2ecef(lon_rad: float, lat_rad: float, h: float, ellipsoid: Ellipsoid) -> tuple:
-    ellipsoid.calc_help_param(lat_rad)
-    x = (ellipsoid.rn + h) * math.cos(lat_rad) * math.cos(lon_rad)
-    y = (ellipsoid.rn + h) * math.cos(lat_rad) * math.sin(lon_rad)
-    z = (ellipsoid.rn * (1 - ellipsoid.e**2) + h) * math.sin(lat_rad)
-    return (x, y, z)
-
-
-def dist3D(p1, p2):
-    if len(p1) == len(p2) == 3:
-        return math.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2 + (p2[2] - p1[2]) ** 2)
+def ecef_dist(pnt1: ECEFPoint, pnt2: ECEFPoint):
+        return math.sqrt((pnt2[0] - pnt1[0]) ** 2 + (pnt2[1] - pnt1[1]) ** 2 + (pnt2[2] - pnt1[2]) ** 2)
     else:
         print("Error! These are not 3D points.")
         return None
