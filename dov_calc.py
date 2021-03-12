@@ -5,73 +5,7 @@ import math
 import numpy as np
 # import time as t
 # import imageio
-from geo_objects import Ellipsoid, GeoPoint, ECEFPoint
-
-
-def geo2ecef(pnt: GeoPoint, ell: Ellipsoid) -> tuple:
-    ell.calc_help_param(pnt.lat)
-    x = (ell.rn + pnt.h) * math.cos(pnt.lat) * math.cos(pnt.lon)
-    y = (ell.rn + pnt.h) * math.cos(pnt.lat) * math.sin(pnt.lon)
-    z = (ell.rn * (1 - ell.e**2) + pnt.h) * math.sin(pnt.lat)
-    return ECEFPoint(x, y, z)
-
-
-def ecef_dist(pnt1: ECEFPoint, pnt2: ECEFPoint):
-        return math.sqrt((pnt2[0] - pnt1[0]) ** 2 + (pnt2[1] - pnt1[1]) ** 2 + (pnt2[2] - pnt1[2]) ** 2)
-    else:
-        print("Error! These are not 3D points.")
-        return None
-
-
-def utm_zone_find(lon_rad):
-    if lon_rad < math.pi:
-        n = int((math.degrees(lon_rad) +180)/6) +1 # zone number
-    elif lon_rad == math.pi:
-        n = 60
-    clon = -180 + n*6 -3 # center meridian longitude
-    return (n, math.radians(clon))
-
-
-def geo2utm(lon_rad, lat_rad, datum_name):
-    """
-    :param lon_rad:
-    :param lat_rad:
-    :param datum_name:
-    """
-    # need: k0, rn, A, T, C, et, M, M0
-    (a, b, f, e, et) = ellipsoid_param(datum_name)
-    (eta, t, v, w, rn, rm, rg) = help_param(lat_rad, datum_name)
-    (n, clon) = utm_zone_find(lon_rad)
-    
-    k0 = 0.9996
-    N = rn
-    T = t**2
-    C = et**2*math.cos(lat_rad)**2
-    A = (lon_rad - clon)*math.cos(lat_rad)
-    M0 = 0
-    M = a*(+(1 -e**2/4 -3*e**4/64 -5*e**6/256)*lat_rad 
-           -(3*e**2/8 +3*e**4/32 +45*e**6/1024)*math.sin(2*lat_rad)
-           +(15*e**4/256 +45*e**6/1024)*math.sin(4*lat_rad)
-           -(35*e**6/3072)*math.sin(6*lat_rad))
-    del b, f, v, w, rm, rn, rg, a, eta
-    
-    x = k0*N*(A 
-               +(1 -T +C)*A**3/6
-               +(5 -18*T +T**2 +72*C -58*et**2)*A**5/120)
-    y = k0*(M - M0 +N*t*( A**2/2 
-                         +(5 -T +9*C +4*C**2)*A**4/24
-                         +(61 -58*T +T**2 +600*C -330*et**2)*A**6/720))
-    east = 500000 + x
-    north = y
-    return (east, north, n)
-  
-    
-def distUTM(p1, p2):
-    if len(p1) == len(p2) == 3:
-        return math.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2)
-    else:
-        print("Error! These are not 2D points.")
-        return None
+from geo_lib import Ellipsoid, GeoPoint, ECEFPoint
     
     
 def xyz2grids(xyz_file_path):
