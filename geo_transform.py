@@ -12,8 +12,7 @@ def geo_to_ecef(pnt: GeodeticPoint, ell: Ellipsoid) -> ECEFPoint:
     return ECEFPoint(x, y, z)
 
 
-def geo2utm(pnt: GeodeticPoint, ell: Ellipsoid):
-    # need: k0, rn, A, T, C, et, M, M0
+def geo_to_utm(pnt: GeodeticPoint, ell: Ellipsoid):
     ell.calc_help_param(pnt)
     zone, center_lon = find_utm_zone(pnt)
 

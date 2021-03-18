@@ -18,7 +18,3 @@ def distance_utm(p1, p2):
     else:
         print("Error! These are not 2D points.")
         return None
-
-
-def distance_ecef(pnt1: ECEFPoint, pnt2: ECEFPoint):
-    return math.sqrt((pnt2.x - pnt1.x)**2 + (pnt2.y - pnt1.y)**2 + (pnt2.z - pnt1.z)**2)
