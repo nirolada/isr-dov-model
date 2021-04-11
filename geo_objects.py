@@ -1,12 +1,18 @@
 import math
-from typing import NamedTuple, TypeVar
+from typing import Tuple, NamedTuple, TypeVar
 
 Number = TypeVar('Number', int, float)
 
 
 class Point3D:
     def __init__(self, val1: Number, val2: Number, val3: Number) -> None:
+        if not all(map(lambda v: isinstance(v, (int, float)), (val1, val2, val3))):
+            raise TypeError('All values must be real!')
         self._val1, self._val2, self._val3 = val1, val2, val3
+    
+    @property
+    def tup(self) -> Tuple[Number, Number, Number]:
+        return self._val1, self._val2, self._val3
 
 
 class GeodeticPoint(Point3D):
@@ -17,7 +23,7 @@ class GeodeticPoint(Point3D):
         if lat_rad < -math.pi / 2 or lat_rad > math.pi / 2:
             raise ValueError(
                 'Latitude in radians must be between [-π/2, π/2]!')
-        super.__init__(lon_rad, lat_rad, h_m)
+        super().__init__(lon_rad, lat_rad, h_m)
 
     @property
     def lon(self) -> Number:
@@ -31,65 +37,69 @@ class GeodeticPoint(Point3D):
     def h(self) -> Number:
         return self._val3
 
-    @property
-    def tup(self):
-        return self._val1, self._val2, self._val3
-
 
 class ECEFPoint(Point3D):
     def __init__(self, x_m: Number, y_m: Number, z_m: Number) -> None:
         # _m - meter
-        super.__init__(x_m, y_m, z_m)
+        super().__init__(x_m, y_m, z_m)
 
     @property
-    def x(self):
+    def x(self) -> Number:
         return self._val1
 
     @property
-    def y(self):
+    def y(self)-> Number:
         return self._val2
 
     @property
-    def z(self):
+    def z(self)-> Number:
         return self._val3
-
-    @property
-    def tup(self):
-        return self._val1, self._val2, self._val3
 
 
 class Point2D:
     def __init__(self, val1: Number, val2: Number) -> None:
+        if not all(map(lambda v: isinstance(v, (int, float)), (val1, val2))):
+            raise TypeError('All values must be real!')
         self._val1, self._val2 = val1, val2
+    
+    @property
+    def tup(self)-> Tuple[Number, Number]:
+        return self._val1, self._val2
 
 
 class UTMPoint(Point2D):
-    def __init__(self, east_m: Number, north_m: Number, zone: int):
+    def __init__(self, zone: int, east_m: Number, north_m: Number):
         # _m - meter
+        if not isinstance(zone, int):
+            raise TypeError
+        
+        super().__init__(east_m, north_m)
+        
         if not 1 <= zone <= 60:
             raise ValueError('Zone number must be between [1, 60]!')
         if not 200000 <= east_m <= 800000:
             raise ValueError('East value must be between [200K, 800K] meters!')
         if not 0 <= north_m <= 10000000:
             raise ValueError('North value must be between [0, 10M] meters!')
-        super.__init__(east_m, north_m)
+        
         self._zone = zone
+        
 
     @property
-    def east(self):
+    def east(self) -> Number:
         return self._val1
 
     @property
-    def north(self):
+    def north(self) -> Number:
         return self._val2
 
     @property
-    def zone(self):
+    def zone(self) -> int:
         return self._zone
 
     @property
-    def tup(self):
-        return self._zone, self._val1, self._val2
+    def tup(self) -> Tuple[int, Number, Number]:
+        return (self._zone,) + super().tup
 
 
 class Ellipsoid:

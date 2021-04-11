@@ -1,5 +1,5 @@
 import math
-from typing import Optional, Tuple, NewType
+from typing import Optional, Tuple
 
 from geo_objects import Number, GeodeticPoint, ECEFPoint, UTMPoint
 
