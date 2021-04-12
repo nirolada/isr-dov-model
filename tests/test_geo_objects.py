@@ -1,12 +1,12 @@
 import unittest
 from geo_objects import (
-    Point3D, GeodeticPoint
+    ECEFPoint, Point2D, Point3D, GeodeticPoint
 )
 
 
 class TestPoint3D(unittest.TestCase):
     def test_valid(self):
-        vals = (1, 2.5, 3)
+        vals = 1, 2.5, 3
         p = Point3D(*vals)
         self.assertTupleEqual(p.tup, vals)
     
@@ -22,23 +22,42 @@ class TestGeodeticPoint(unittest.TestCase):
         self.assertEqual(p.tup, (lon, lat, h))
     
     def test_invalid(self):
-        lon, lat, h = 'a', (3,), 360.5
         with self.assertRaises(TypeError):
-            GeodeticPoint(lon, lat, h)
+            GeodeticPoint('a', (3,), 360.5)
+            
     def test_invalid_lon(self):
-        lon, lat, h = -4, 0.593411946, 156.755
         with self.assertRaises(ValueError):
-            GeodeticPoint(lon, lat, h)
+            GeodeticPoint(-4, 0.593411946, 156.755)
     
     def test_invalid_lat(self):
-        lon, lat, h = 0.602138592, 2, 156.755
         with self.assertRaises(ValueError):
-            GeodeticPoint(lon, lat, h)
+            GeodeticPoint(0.602138592, 2, 156.755)
 
 
 class TestECEFPoint(unittest.TestCase):
     def test_valid(self):
-        pass
+        x, y, z = 4449038, 3094664, 3351722
+        p = ECEFPoint(x, y, z)
+        self.assertEqual(p.tup, (x, y, z))
+    
+    def test_invalid(self):
+        with self.assertRaises(TypeError):
+            ECEFPoint('a', [2], -345)
+
+
+class TestPoint2D(unittest.TestCase):
+    def test_valid(self):
+        vals = 1, 2
+        p = Point2D(*vals)
+        self.assertEqual(p.tup, vals)
+    
+    def test_invalid(self):
+        with self.assertRaises(TypeError):
+            Point2D('a', 3)
+
+
+class TestUTMPoint(unittest.TestCase):
+    pass
 
 
 if __name__ == '__main__':

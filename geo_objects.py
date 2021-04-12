@@ -7,7 +7,7 @@ Number = TypeVar('Number', int, float)
 class Point3D:
     def __init__(self, val1: Number, val2: Number, val3: Number) -> None:
         if not all(map(lambda v: isinstance(v, (int, float)), (val1, val2, val3))):
-            raise TypeError('All values must be real!')
+            raise TypeError('All values must be integers or floats!')
         self._val1, self._val2, self._val3 = val1, val2, val3
     
     @property
@@ -59,7 +59,7 @@ class ECEFPoint(Point3D):
 class Point2D:
     def __init__(self, val1: Number, val2: Number) -> None:
         if not all(map(lambda v: isinstance(v, (int, float)), (val1, val2))):
-            raise TypeError('All values must be real!')
+            raise TypeError('All values must be integers or floats!')
         self._val1, self._val2 = val1, val2
     
     @property
