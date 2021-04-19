@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, NamedTuple, TypeVar
+from typing import Tuple, TypeVar
 
 Number = TypeVar('Number', int, float)
 
