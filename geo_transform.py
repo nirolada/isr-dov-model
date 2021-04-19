@@ -1,10 +1,10 @@
 import math
 
-from geo_objects import GeodeticPoint, ECEFPoint, UTMPoint, Ellipsoid
+from geo_objects import GeodeticPoint, ECEFPoint, UTMPoint, WGS84Ellipsoid
 from geo_functions import find_utm_zone
 
 
-def geo_to_ecef(p: GeodeticPoint, ell: Ellipsoid) -> ECEFPoint:
+def geo_to_ecef(p: GeodeticPoint, ell: WGS84Ellipsoid) -> ECEFPoint:
     _, rn = ell.calc_help_param(p.lat)
     x = (rn + p.h) * math.cos(p.lat) * math.cos(p.lon)
     y = (rn + p.h) * math.cos(p.lat) * math.sin(p.lon)
@@ -12,13 +12,13 @@ def geo_to_ecef(p: GeodeticPoint, ell: Ellipsoid) -> ECEFPoint:
     return ECEFPoint(x, y, z)
 
 
-def geo_to_utm(p: GeodeticPoint, ell: Ellipsoid):
+def geo_to_utm(p: GeodeticPoint, ell: WGS84Ellipsoid):
     t, rn = ell.calc_help_param(p.lat)
     zone, center_lon = find_utm_zone(p)
 
     k0 = 0.9996
-    N = ell.rn
-    T = ell.t ** 2
+    N = rn
+    T = t ** 2
     C = ell.et**2 * math.cos(p.lat)**2
     A = (p.lon - center_lon) * math.cos(p.lat)
     M0 = 0
@@ -32,7 +32,7 @@ def geo_to_utm(p: GeodeticPoint, ell: Ellipsoid):
     x = k0 * N * (
         A + (1 - T + C) * A**3/6 + (5 - 18*T + T**2 + 72*C - 58*ell.et**2) * A**5/120)
     y = k0 * (
-        M - M0 + N*ell.t*(
+        M - M0 + N*t*(
             + A**2/2
             + (5 - T + 9*C + 4*C**2) * A**4/24
             + (61 - 58*T + T**2 + 600*C - 330*ell.et**2) * A**6/720))

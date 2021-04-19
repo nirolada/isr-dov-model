@@ -102,22 +102,22 @@ class UTMPoint(Point2D):
         return (self._zone,) + super().tup
 
 
-class Ellipsoid:
-    class HelpParam(NamedTuple):
-        t: Number
-        rn: Number  # radius of curvature in the prime vertical
+class WGS84Ellipsoid:
+    def __init__(self) -> None:
+        self._name = 'WGS84'
+        self._a = 6378137  # semi major axis in meters
+        self._f = 1/298.257223563  # flattening
+        self._e = math.sqrt(2*self._f - self._f**2)  # eccentricity
+        self._et = math.sqrt(self._e**2 / (1 - self._e**2))  # 2nd eccentricity
 
-    def __init__(self, name: str, a_m: Number, f: Number) -> None:
-        self._name = name
-        self._a = a_m  # semi major axis in meters
-        self._f = f  # flattening
-        self._e = math.sqrt(2*f - f**2)  # eccentricity
-        self._et = math.sqrt(self.e**2 / (1 - self.e**2))  # 2nd eccentricity
-
-    def calc_help_param(self, lat_rad: Number) -> 'HelpParam':
-        """Calculate help parameters at a given latitude in radians."""
-        return self.HelpParam(math.tan(lat_rad),
-                              self.a / math.sqrt(1 - self.e**2 * math.sin(lat_rad)**2))
+    # Calculate help parameters for a given latitude in radians.
+    def calc_help_param(self, lat_rad: Number):
+        class HelpParam(NamedTuple):
+            t: Number
+            rn: Number  # radius of curvature in the prime vertical
+        
+        return HelpParam(math.tan(lat_rad),
+                              self._a / math.sqrt(1 - self._e**2 * math.sin(lat_rad)**2))
 
     @property
     def name(self) -> str:
