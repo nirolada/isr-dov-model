@@ -112,12 +112,11 @@ class WGS84Ellipsoid:
 
     # Calculate help parameters for a given latitude in radians.
     def calc_help_param(self, lat_rad: Number):
-        class HelpParam(NamedTuple):
-            t: Number
-            rn: Number  # radius of curvature in the prime vertical
+        t: Number = math.tan(lat_rad)
         
-        return HelpParam(math.tan(lat_rad),
-                              self._a / math.sqrt(1 - self._e**2 * math.sin(lat_rad)**2))
+        # radius of curvature in the prime vertical
+        rn: Number =  self._a / math.sqrt(1 - self._e**2 * math.sin(lat_rad)**2)
+        return t, rn                      
 
     @property
     def name(self) -> str:
