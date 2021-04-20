@@ -1,5 +1,6 @@
 import unittest
 from collections import namedtuple
+
 from geo_objects import (
     ECEFPoint, Point2D, Point3D, GeodeticPoint, UTMPoint
 )
