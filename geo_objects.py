@@ -42,7 +42,7 @@ class ECEFPoint(Point3D):
     def __init__(self, x_m: Number, y_m: Number, z_m: Number) -> None:
         # _m - meter
         super().__init__(x_m, y_m, z_m)
-
+    
     @property
     def x(self) -> Number:
         return self._val1
@@ -137,3 +137,6 @@ class WGS84Ellipsoid:
     @property
     def et(self) -> Number:
         return self._et
+    
+    
+wgs84 = WGS84Ellipsoid()

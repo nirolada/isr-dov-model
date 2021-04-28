@@ -14,7 +14,7 @@ def geo_to_ecef(p: GeodeticPoint, ell: WGS84Ellipsoid) -> ECEFPoint:
 
 def geo_to_utm(p: GeodeticPoint, ell: WGS84Ellipsoid):
     t, rn = ell.calc_help_param(p.lat)
-    zone, center_lon = find_utm_zone(p)
+    zone, center_lon = find_utm_zone(p.lon)
 
     k0 = 0.9996
     N = rn
@@ -38,4 +38,4 @@ def geo_to_utm(p: GeodeticPoint, ell: WGS84Ellipsoid):
             + (61 - 58*T + T**2 + 600*C - 330*ell.et**2) * A**6/720))
     east = 500000 + x
     north = y
-    return UTMPoint(east, north, zone)
+    return UTMPoint(zone, east, north)
