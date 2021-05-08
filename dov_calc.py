@@ -5,29 +5,21 @@ import math
 import numpy as np
 # import time as t
 # import imageio
-from geo_lib import Ellipsoid, GeoPoint, ECEFPoint
+from geo_objects import Ellipsoid, GeoPoint, ECEFPoint
     
     
 def xyz2grids(xyz_file_path):
     """
-    Converts an xyz text file to 3 proper numpy grids (numpy matrix).
+    Converts an xyz file to 3 proper numpy grids.
+    Saves the corresponding grids as '.npy' files.
     
-    Args:
-        xyz_file_path (string): file path to the xyz file. 
-                                the lines in the file should be in this format - "longitude,latitude,undulation"
-        
-    Returns:
-        lon_grid (numpy matrix): a grid containing the longitude values
-        lat_grid (numpy matrix): a grid containing the latitude values
-        und_grid (numpy matrix): a grid containing the undulation values
-        
+    @type xyz_file_path: str
+    @param xyz_file_path: A path to a xyz file. 
+                          Expected line format: <longitude>,<latitude>,<undulation>
     """    
-    # open the file the user selected
     xyz_file = open(xyz_file_path) 
-    # initiate lists
-    lon = [] # longitude list
-    lat = [] # latitude list
-    und = [] # undulation list
+    lon, lat, und = list(), list(), list()
+    # TO BE CONTINUED FROM HERE!!!
     # fill the lists with values
     while True:
         line = xyz_file.readline()
