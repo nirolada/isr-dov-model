@@ -10,7 +10,7 @@ class TestPoint3D(unittest.TestCase):
     def test_valid(self):
         valid = 1, 2.5, 3
         p = Point3D(*valid)
-        self.assertTupleEqual(p.tup, valid)
+        self.assertTupleEqual(p.as_tuple, valid)
     
     def test_invalid(self):
         with self.assertRaises(TypeError):
@@ -23,7 +23,7 @@ class TestGeodeticPoint(unittest.TestCase):
     
     def test_valid(self):
         p = GeodeticPoint(*self.valid)
-        self.assertEqual(p.tup, self.valid)
+        self.assertEqual(p.as_tuple, self.valid)
     
     def test_invalid(self):
         with self.assertRaises(TypeError):
@@ -44,7 +44,7 @@ class TestECEFPoint(unittest.TestCase):
     
     def test_valid(self):
         p = ECEFPoint(*self.valid)
-        self.assertEqual(p.tup, self.valid)
+        self.assertEqual(p.as_tuple, self.valid)
     
     def test_invalid(self):
         with self.assertRaises(TypeError):

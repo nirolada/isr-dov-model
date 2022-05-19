@@ -1,58 +1,69 @@
-import math
+from numpy import pi
 from typing import Tuple, TypeVar
 
 Number = TypeVar('Number', int, float)
 
 
+class NotARealNumberError(TypeError):
+    def __init__(self):
+        super().__init__('All values must be real numbers!')
+
+
+class ValueNotInDefinitionRange(ValueError):
+    def __init__(self, name: str, bounds: Tuple[Number, Number]):
+        super().__init__(f'{name} must be between [{bounds[0]}, {bounds[1]}]!')
+
+
 class Point3D:
     def __init__(self, val1: Number, val2: Number, val3: Number) -> None:
-        if not all(map(lambda v: isinstance(v, (int, float)), (val1, val2, val3))):
-            raise TypeError('All values must be integers or floats!')
+        if not all(map(lambda val: isinstance(val, (int, float)), (val1, val2, val3))):
+            raise NotARealNumberError
+
         self._val1, self._val2, self._val3 = val1, val2, val3
     
     @property
-    def tup(self) -> Tuple[Number, Number, Number]:
+    def as_tuple(self) -> Tuple[Number, Number, Number]:
         return self._val1, self._val2, self._val3
 
 
 class GeodeticPoint(Point3D):
-    def __init__(self, lon_rad: Number, lat_rad: Number, h_m: Number) -> None:
-        # _rad - radians  # _m - meters
-        if lon_rad < -math.pi or lon_rad > math.pi:
-            raise ValueError('Longitude in radians must be between [-π, π]!')
-        if lat_rad < -math.pi / 2 or lat_rad > math.pi / 2:
-            raise ValueError(
-                'Latitude in radians must be between [-π/2, π/2]!')
-        super().__init__(lon_rad, lat_rad, h_m)
+    def __init__(self, longitude: Number, latitude: Number, height: Number) -> None:
+        """Longitude and latitude in radians. Height in meters."""
+        if longitude < -pi or longitude > pi:
+            raise ValueNotInDefinitionRange('Longitude', ('-π', 'π'))
+
+        if latitude < -pi / 2 or latitude > pi / 2:
+            raise ValueError('Latitude must be between [-π/2, π/2]!')
+
+        super().__init__(longitude, latitude, height)
 
     @property
-    def lon(self) -> Number:
+    def longitude(self) -> Number:
         return self._val1
 
     @property
-    def lat(self) -> Number:
+    def latitude(self) -> Number:
         return self._val2
 
     @property
-    def h(self) -> Number:
+    def height(self) -> Number:
         return self._val3
 
 
 class ECEFPoint(Point3D):
-    def __init__(self, x_m: Number, y_m: Number, z_m: Number) -> None:
-        # _m - meter
-        super().__init__(x_m, y_m, z_m)
+    def __init__(self, x: Number, y: Number, z: Number) -> None:
+        super().__init__(x, y, z)
     
     @property
     def x(self) -> Number:
         return self._val1
 
     @property
-    def y(self)-> Number:
+    def y(self) -> Number:
         return self._val2
 
     @property
-    def z(self)-> Number:
+    def z(self) -> Number:
         return self._val3
 
 
